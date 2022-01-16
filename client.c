@@ -1,3 +1,4 @@
+#include <X11/X.h>
 #include <stdio.h>
 #include <stdlib.h>
 #include <unistd.h>
@@ -6,6 +7,7 @@
 #include <sys/socket.h>
 #include <arpa/inet.h>
 #include <X11/Xlib.h>
+#include <X11/extensions/XTest.h>
 
 void warp_mouse(int sock)
 {
@@ -39,6 +41,13 @@ void warp_mouse(int sock)
         } break;
         case 1:
             return;
+        case 2:
+        {
+            int btn, down;
+            sscanf(buf, "%*d %d %d", &btn, &down);
+            XTestFakeButtonEvent(display, btn, down, CurrentTime);
+            XFlush(display);
+        } break;
         }
     }
 

@@ -29,10 +29,14 @@ void send_mouse_coords(int sock)
     XEvent evt;
 
     bool control_mouse = false;
-    size_t counter = 0;
 
     while (true)
     {
+        XGrabPointer(display, root, True,
+                    PointerMotionMask | ButtonPressMask | ButtonReleaseMask,
+                    GrabModeAsync, GrabModeAsync, None, None, CurrentTime);
+        XAllowEvents(display, AsyncPointer, CurrentTime);
+
         if (XPending(display))
         {
             XNextEvent(display, &evt);
@@ -58,6 +62,15 @@ void send_mouse_coords(int sock)
                     return;
                 }
             }
+
+            if (evt.type == ButtonPress || evt.type == ButtonRelease)
+            {
+                char s[100] = { 0 };
+                sprintf(s, "2 %d %d", evt.xbutton.button, evt.type == ButtonPress ? True : False);
+
+                send(sock, s, 100 * sizeof(char), 0);
+                continue;
+            }
         }
 
         if (control_mouse)
@@ -65,7 +78,7 @@ void send_mouse_coords(int sock)
             int x, y;
             mouse_pos(display, &root, &x, &y);
             char s[100] = { 0 };
-            sprintf(s, "0 %d %d %lu", x, y, counter++);
+            sprintf(s, "0 %d %d", x, y);
 
             send(sock, s, 100 * sizeof(char), 0);
         }
