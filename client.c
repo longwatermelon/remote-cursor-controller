@@ -24,7 +24,7 @@ void warp_mouse(int sock)
         sscanf(buf, "%d %d", &x, &y);
 
         printf("Client: %d %d\n", x, y);
-        XWarpPointer(display, None, root, 0, 0, 0, 0, x + 50, y);
+        XWarpPointer(display, None, root, 0, 0, 0, 0, x, y);
         XFlush(display);
     }
 

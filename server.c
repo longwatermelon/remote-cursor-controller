@@ -34,7 +34,7 @@ void send_mouse_coords(int sock)
 
         send(sock, s, strlen(s) * sizeof(char), 0);
 
-        sleep(1);
+        usleep(10000);
     }
 
     XCloseDisplay(display);
