@@ -54,6 +54,11 @@ void send_mouse_coords(int sock)
                     else
                         printf("Released mouse\n");
                 }
+                else if (strcmp(s, "y") == 0)
+                {
+                    send(sock, "3", 2 * sizeof(char), 0);
+                    continue;
+                }
 
                 if (evt.xkey.keycode == 0x09)
                 {

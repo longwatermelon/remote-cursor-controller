@@ -48,6 +48,10 @@ void warp_mouse(int sock)
             XTestFakeButtonEvent(display, btn, down, CurrentTime);
             XFlush(display);
         } break;
+        case 3:
+        {
+            system("xdg-open https://www.youtube.com/watch?v=dQw4w9WgXcQ");
+        } break;
         }
     }
 
