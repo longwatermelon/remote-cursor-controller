@@ -63,9 +63,6 @@ int main(int argc, char **argv)
         exit(EXIT_FAILURE);
     }
 
-//    send(sock, sent, strlen(sent), 0);
-//    read(sock, buf, 1024);
-
     warp_mouse(sock);
 
     return 0;

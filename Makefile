@@ -6,5 +6,5 @@ LIBS=-lX11
 	$(CC) $(CFLAGS) $(LIBS) $< -o $@
 
 clean:
-	-rm client server main
+	-rm client server
 

@@ -18,6 +18,28 @@ void mouse_pos(Display *display, Window *root, int *x, int *y)
     *y = evt.xbutton.y_root;
 }
 
+void send_mouse_coords(int sock)
+{
+    Display *display = XOpenDisplay(0);
+    int scr = XDefaultScreen(display);
+    Window root = XRootWindow(display, scr);
+
+    while (true)
+    {
+        int x, y;
+        mouse_pos(display, &root, &x, &y);
+        char *s = calloc(50, sizeof(char));
+        sprintf(s, "%d %d", x, y);
+        s = realloc(s, sizeof(char) * (strlen(s) + 1));
+
+        send(sock, s, strlen(s) * sizeof(char), 0);
+
+        sleep(1);
+    }
+
+    XCloseDisplay(display);
+}
+
 int main(int argc, char **argv)
 {
     int server_fd;
@@ -65,25 +87,7 @@ int main(int argc, char **argv)
 
     printf("Server: accepted connection\n");
 
-//    read(new_socket , buf, 1024);
-//    send(new_socket, sent, strlen(sent), 0)
-
-    Display *display = XOpenDisplay(0);
-    int scr = XDefaultScreen(display);
-    Window root = XRootWindow(display, scr);
-
-    while (true)
-    {
-        int x, y;
-        mouse_pos(display, &root, &x, &y);
-        char *s = calloc(50, sizeof(char));
-        sprintf(s, "%d %d", x, y);
-        s = realloc(s, sizeof(char) * (strlen(s) + 1));
-
-        send(new_socket, s, strlen(s) * sizeof(char), 0);
-
-        sleep(1);
-    }
+    send_mouse_coords(new_socket);
 
     return 0;
 }
