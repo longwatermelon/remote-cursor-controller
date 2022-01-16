@@ -20,12 +20,13 @@ int main()
     int scr = XDefaultScreen(display);
     Window root = XRootWindow(display, scr);
 
-    while (true)
-    {
-        int x, y;
-        mouse_pos(display, &root, &x, &y);
+    int x, y;
+    mouse_pos(display, &root, &x, &y);
 
-        printf("%d %d\n", x, y);
+    for (int i = 0; i < 100; ++i)
+    {
+        XWarpPointer(display, None, root, 0, 0, 0, 0, x + i, y + i);
+        usleep(100);
     }
 
 //    XWarpPointer(display, None, root, 0, 0, 0, 0, 100, 100);
