@@ -2,8 +2,34 @@
 #include <stdlib.h>
 #include <unistd.h>
 #include <string.h>
+#include <stdbool.h>
 #include <sys/socket.h>
 #include <arpa/inet.h>
+#include <X11/Xlib.h>
+
+void warp_mouse(int sock)
+{
+    Display *display = XOpenDisplay(0);
+    int scr = XDefaultScreen(display);
+    Window root = XRootWindow(display, scr);
+
+    XWarpPointer(display, None, root, 0, 0, 0, 0, 100, 100);
+
+    while (true)
+    {
+        char buf[100] = { 0 };
+        read(sock, buf, 50);
+
+        int x, y;
+        sscanf(buf, "%d %d", &x, &y);
+
+        printf("Client: %d %d\n", x, y);
+        XWarpPointer(display, None, root, 0, 0, 0, 0, x + 50, y);
+        XFlush(display);
+    }
+
+    XCloseDisplay(display);
+}
 
 int main(int argc, char **argv)
 {
@@ -37,13 +63,10 @@ int main(int argc, char **argv)
         exit(EXIT_FAILURE);
     }
 
-    char *sent = "sample text";
-    send(sock, sent, strlen(sent), 0);
-    printf("Client: sent message\n");
+//    send(sock, sent, strlen(sent), 0);
+//    read(sock, buf, 1024);
 
-    char buf[1024] = { 0 };
-    read(sock, buf, 1024);
-    printf("Client: received '%s'\n", buf);
+    warp_mouse(sock);
 
     return 0;
 }

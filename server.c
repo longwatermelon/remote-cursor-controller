@@ -2,8 +2,21 @@
 #include <stdlib.h>
 #include <unistd.h>
 #include <string.h>
+#include <stdbool.h>
 #include <sys/socket.h>
 #include <netinet/in.h>
+#include <X11/Xlib.h>
+
+void mouse_pos(Display *display, Window *root, int *x, int *y)
+{
+    XEvent evt;
+    XQueryPointer(display, *root, &evt.xbutton.root, &evt.xbutton.subwindow,
+                &evt.xbutton.x_root, &evt.xbutton.y_root,
+                &evt.xbutton.x, &evt.xbutton.y, &evt.xbutton.state);
+
+    *x = evt.xbutton.x_root;
+    *y = evt.xbutton.y_root;
+}
 
 int main(int argc, char **argv)
 {
@@ -52,13 +65,25 @@ int main(int argc, char **argv)
 
     printf("Server: accepted connection\n");
 
-    char buf[1024] = { 0 };
-    read(new_socket , buf, 1024);
-    printf("Server: received '%s'\n", buf);
+//    read(new_socket , buf, 1024);
+//    send(new_socket, sent, strlen(sent), 0)
 
-    char *sent = "sample text";
-    send(new_socket, sent, strlen(sent), 0);
-    printf("Server: sent message\n");
+    Display *display = XOpenDisplay(0);
+    int scr = XDefaultScreen(display);
+    Window root = XRootWindow(display, scr);
+
+    while (true)
+    {
+        int x, y;
+        mouse_pos(display, &root, &x, &y);
+        char *s = calloc(50, sizeof(char));
+        sprintf(s, "%d %d", x, y);
+        s = realloc(s, sizeof(char) * (strlen(s) + 1));
+
+        send(new_socket, s, strlen(s) * sizeof(char), 0);
+
+        sleep(1);
+    }
 
     return 0;
 }
