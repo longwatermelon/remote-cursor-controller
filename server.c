@@ -24,17 +24,53 @@ void send_mouse_coords(int sock)
     int scr = XDefaultScreen(display);
     Window root = XRootWindow(display, scr);
 
+    XSelectInput(display, root, KeyPressMask | KeyReleaseMask);
+
+    XEvent evt;
+
+    bool control_mouse = false;
+    size_t counter = 0;
+
     while (true)
     {
-        int x, y;
-        mouse_pos(display, &root, &x, &y);
-        char *s = calloc(50, sizeof(char));
-        sprintf(s, "%d %d", x, y);
-        s = realloc(s, sizeof(char) * (strlen(s) + 1));
+        if (XPending(display))
+        {
+            XNextEvent(display, &evt);
 
-        send(sock, s, strlen(s) * sizeof(char), 0);
+            if (evt.type == KeyPress)
+            {
+                char *s = XKeysymToString(XKeycodeToKeysym(display, evt.xkey.keycode, 0));
 
-        usleep(10000);
+                if (strcmp(s, "m") == 0)
+                {
+                    control_mouse = !control_mouse;
+
+                    if (control_mouse)
+                        printf("Controlling mouse\n");
+                    else
+                        printf("Released mouse\n");
+                }
+
+                if (evt.xkey.keycode == 0x09)
+                {
+                    printf("Quitting\n");
+                    send(sock, "1", 2 * sizeof(char), 0);
+                    return;
+                }
+            }
+        }
+
+        if (control_mouse)
+        {
+            int x, y;
+            mouse_pos(display, &root, &x, &y);
+            char s[100] = { 0 };
+            sprintf(s, "0 %d %d %lu", x, y, counter++);
+
+            send(sock, s, 100 * sizeof(char), 0);
+        }
+
+        usleep(1e4);
     }
 
     XCloseDisplay(display);

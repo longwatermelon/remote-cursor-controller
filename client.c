@@ -18,14 +18,28 @@ void warp_mouse(int sock)
     while (true)
     {
         char buf[100] = { 0 };
-        read(sock, buf, 50);
+        read(sock, buf, 100 * sizeof(char));
 
-        int x, y;
-        sscanf(buf, "%d %d", &x, &y);
+        if (strlen(buf) == 0)
+            continue;
 
-        printf("Client: %d %d\n", x, y);
-        XWarpPointer(display, None, root, 0, 0, 0, 0, x, y);
-        XFlush(display);
+        int type = -1;
+        sscanf(buf, "%d", &type);
+
+        switch (type)
+        {
+        case -1:
+            break;
+        case 0:
+        {
+            int x, y;
+            sscanf(buf, "%*d %d %d", &x, &y);
+            XWarpPointer(display, None, root, 0, 0, 0, 0, x, y);
+            XFlush(display);
+        } break;
+        case 1:
+            return;
+        }
     }
 
     XCloseDisplay(display);
