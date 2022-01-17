@@ -15,8 +15,6 @@ void warp_mouse(int sock)
     int scr = XDefaultScreen(display);
     Window root = XRootWindow(display, scr);
 
-    XWarpPointer(display, None, root, 0, 0, 0, 0, 100, 100);
-
     while (true)
     {
         char buf[100] = { 0 };
