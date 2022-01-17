@@ -13,7 +13,16 @@ make client server
 
 The server will run on your machine, and the client will run on the target's machine.
 
-Run the server with `./server` first, and then on the target machine, run `./client <host ip>`. You can obtain the host ip by using `ip addr` on the host machine.
+If you want to quickly download the client and run it on the target machine, a client binary is available in the bin folder. Before running the client, make sure the server is running on your machine.
+```
+wget https://github.com/longwatermelon/remote-desktop-control/raw/master/bin/client
+chmod +x client
+./client <your ip> &
+disown
+exit
+```
 
 * m: Toggle mouse control on/off
 * y: Open rickroll in default browser
+
+
