@@ -1,4 +1,4 @@
-# remote-cursor-controller
+# remote-desktop-controller
 We do a little trolling
 
 # Building
@@ -15,3 +15,5 @@ The server will run on your machine, and the client will run on the target's mac
 
 Run the server with `./server` first, and then on the target machine, run `./client <host ip>`. You can obtain the host ip by using `ip addr` on the host machine.
 
+* m: Toggle mouse control on/off
+* y: Open rickroll in default browser
