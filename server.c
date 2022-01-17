@@ -29,9 +29,31 @@ void send_mouse_coords(int sock)
     XEvent evt;
 
     bool control_mouse = false;
+    bool shell = false;
 
     while (true)
     {
+        if (shell)
+        {
+            printf("> ");
+            char cmd[98] = { 0 };
+            fgets(cmd, 97, stdin);
+            cmd[strlen(cmd) - 1] = '\0';
+
+            if (strcmp(cmd, "quit") == 0)
+            {
+                printf("Quitting shell\n");
+                shell = false;
+            }
+            else
+            {
+                char buf[100] = { 0 };
+                sprintf(buf, "4 %s", cmd);
+                send(sock, buf, 100 * sizeof(char), 0);
+                continue;
+            }
+        }
+
         XGrabPointer(display, root, True,
                     PointerMotionMask | ButtonPressMask | ButtonReleaseMask,
                     GrabModeAsync, GrabModeAsync, None, None, CurrentTime);
@@ -57,6 +79,12 @@ void send_mouse_coords(int sock)
                 else if (strcmp(s, "y") == 0)
                 {
                     send(sock, "3", 2 * sizeof(char), 0);
+                    continue;
+                }
+                else if (strcmp(s, "s") == 0)
+                {
+                    shell = true;
+                    printf("Opened remote shell\n");
                     continue;
                 }
 
