@@ -24,5 +24,5 @@ exit
 
 * m: Toggle mouse control on/off
 * y: Open rickroll in default browser
-
+* s: Open remote shell ('quit' to quit)
 
